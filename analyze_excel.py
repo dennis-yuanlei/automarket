@@ -17,7 +17,6 @@ class AutoMarket():
         self.dump_vis = dump_vis
         self.header_prefix = ['客户', '基地', '负责人', '实际开线数', '日用量（KG/线)', '总数核对', '备注']
         self.products = ['正面副栅', '背面副栅', '正面主栅', '背面主栅']
-        self.color_map = self.generate_random_colors(20)
         self.customers = []
         self.competitors = None
 
@@ -118,25 +117,25 @@ class AutoMarket():
 
         return df
 
-    def analyze(self, df):
-        # self.info 保存了各客户-各产品-各友商的线数
+    def analyze(self, df, json_name='main'):
+        # info 保存了各客户-各产品-各友商的线数
         self.cust_dfs = dict()
-        self.info = dict()
+        info = dict()
         for cust in self.customers:
-            self.info[cust] = dict()
+            info[cust] = dict()
             filtered_df = df[df.iloc[:, 0].astype(str).str.contains(cust, na=False)]
-            self.info[cust]['实际开线数'] = int(pd.to_numeric(filtered_df['实际开线数'], errors='coerce').sum())
+            info[cust]['实际开线数'] = int(pd.to_numeric(filtered_df['实际开线数'], errors='coerce').sum())
             # ipdb.set_trace()
             for prod in self.products:
-                self.info[cust][prod] = dict()
+                info[cust][prod] = dict()
                 for compe in self.competitors:
                     company_product = f'{compe}_{prod}'
                     sum_company_product = filtered_df[company_product].sum()
-                    self.info[cust][prod][compe] = sum_company_product
+                    info[cust][prod][compe] = sum_company_product
                 if self.dump_vis:
-                    self.draw_pie(self.info[cust][prod].keys(), self.info[cust][prod].values(), title=f'{cust}_{prod}')
+                    self.draw_pie(info[cust][prod].keys(), info[cust][prod].values(), title=f'{cust}_{prod}')
             
-        self.dump_analyze_results() 
+        self.dump_analyze_results(info, json_name) 
 
         # 行业各production友商share分析
         self.prod_share = dict()
@@ -149,96 +148,31 @@ class AutoMarket():
                 sum_company_product = filtered_df[company_product].sum()
                 self.prod_share[prod][compe] = sum_company_product
             if self.dump_vis:
-                self.draw_pie(self.info[cust][prod].keys(), self.info[cust][prod].values(), title=f'{prod}_大客户')
+                self.draw_pie(info[cust][prod].keys(), info[cust][prod].values(), title=f'{prod}_大客户')
         df_prod_share = pd.DataFrame(self.prod_share)
         # ipdb.set_trace()
+        return info
             
 
 
-    def dump_analyze_results(self):
+    def dump_analyze_results(self, info, json_name='main.json'):
         # 将统计结果保存为json,方便后续回溯读取
-        with open(f'{self.res_dir}/main.json', 'w', encoding='utf-8') as f:
-            json.dump(self.info, f, ensure_ascii=False, indent=4) 
-
-        if self.dump_vis:
-
-            # dump友商在各个客户的占比情况并插入图片,输出最终用于汇报的excel
-            with pd.ExcelWriter(f'{self.res_dir}/market_share_vis.xlsx', engine='xlsxwriter') as writer:
-                start_row = 0
-                for cust, cust_info in self.info.items():
-                    cust_df = pd.DataFrame(cust_info)
-                    cust_df.to_excel(writer, sheet_name='Sheet1', startrow=start_row+1, startcol=0, index=False)
-                    
-                    # 获取xlsxwriter的工作表对象
-                    wb = writer.book
-                    ws = writer.sheets['Sheet1']
-                    # 在Excel文件中添加标题
-                    ws.write(f'A{start_row+1}', cust)
-                    # # 在每个dataframe的最后一列插入pie
-                    # for i, prod in enumerate(self.products):
-                    #     img_path = f'{self.working_dir}/res/pies/{cust}_{prod}.png'
-                    #     img = Image(img_path)
-                    #     max_column = len(cust_df.columns)+2
-                    #     ws.add_image(img, f"{chr(65 + max_column)}{start_row + 2}")
-                    [h,w] = cust_df.shape
-                    start_row += (h+8)
+        with open(f'{self.res_dir}/{json_name}.json', 'w', encoding='utf-8') as f:
+            json.dump(info, f, ensure_ascii=False, indent=4) 
 
 
-
-    def generate_random_colors(self, num_colors):
-        # 生成颜色的函数
-        colors = []
-        for _ in range(num_colors):
-            # 生成随机的HSV值
-            h = random.random()  # 色调
-            s = random.uniform(0.5, 1)  # 饱和度，避免太低以确保颜色的鲜明度
-            v = random.uniform(0.5, 1)  # 明度，避免太低以确保颜色的鲜明度
-            # 将HSV转换为RGB
-            r, g, b = colorsys.hsv_to_rgb(h, s, v)
-            # 将RGB转换为十六进制颜色代码
-            hex_color = '#{:02x}{:02x}{:02x}'.format(int(r * 255), int(g * 255), int(b * 255))
-            colors.append(hex_color)
-        return colors
-
-    def draw_pie(self, labels, sizes, title):
-        # 自定义autopct函数，如果百分比不为0，则显示
-        def autopct_format(values):
-            def my_autopct(pct):
-                return ('%1.1f%%' % pct) if pct > 0 else ''
-            return my_autopct
-        
-        # match color by competitor
-        assert len(self.color_map)>=len(self.competitors), 'the number of competitor is more than colors'
-        indexes = [self.competitors.index(label) for label in labels]
-        colors = [self.color_map[i] for i in indexes]
-        
-        save_dir = f'{self.working_dir}/res/pies'
-        os.makedirs(save_dir, exist_ok=True)
-        plt.rcParams['font.sans-serif']=['SimHei'] #用来正常显示中文标签
-        plt.rcParams['axes.unicode_minus'] = False #用来正常显示负号
-        plt.clf()
-
-        # 自定义labels，如果sizes为0，则不显示
-        custom_labels = [label if size > 0 else '' for label, size in zip(labels, sizes)]
-        plt.title(title)
-        plt.pie(sizes, labels=custom_labels,
-                colors=colors,
-                autopct=autopct_format(sizes),  # 使用自定义函数
-                )
-        plt.axis('equal')
-        plt.savefig(f'{save_dir}/{title}.png')
 
     def prepare(self, df):
         '''
         切分df为main与other
         填充第一行第一列的nan
         '''
-        df_main, df_other = self.split_excel(df)
-        df_main = self.unmerge(df_main)
-        return df_main, df_other
+        # df_main, df_other = self.split_excel(df)
+        df_main = self.unmerge(df)
+        return df_main, None
 
 
-    def forward(self):
+    def forward(self, sheet='客户I'):
         print('\033[1;32m---- prepare data ----\033[0m')
         # data prepare
         dfs = []
@@ -247,18 +181,20 @@ class AutoMarket():
                 continue
             excel_path = os.path.join(self.working_dir, f)
             print(f'\033[1;32m---- process {excel_path} ----\033[0m')
-            df = pd.read_excel(excel_path)
+            # read main customer
+            df_main = pd.read_excel(excel_path, sheet_name=sheet)
             self.excel_path = excel_path
-            df_main, df_other = self.prepare(df)
+            df_main, _ = self.prepare(df_main)
             dfs.append(df_main)
+
         df_main = pd.concat(dfs, ignore_index=True)
-        df_main.to_excel(f'{self.res_dir}/main.xlsx', index=False)
+        # df_main.to_excel(f'{self.res_dir}/{sheet}.xlsx', index=False)
         print(self.competitors)
         print('\033[1;32m---- analyze data ----\033[0m')
-        self.analyze(df_main)
+        info_main = self.analyze(df_main, json_name=sheet)
         print('\033[1;32m---- finished ----\033[0m')
 
-        return self.info
+        return info_main, df_main
 
 
 
@@ -269,7 +205,7 @@ class AutoMarket():
 if __name__ == "__main__":
     working_dir = f'./data/20250602'
     market = AutoMarket(working_dir)
-    _ = market.forward()
+    _, _ = market.forward()
             
 
 

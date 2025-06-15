@@ -1,5 +1,6 @@
 import json
 from pyecharts.charts import Pie, Grid, Page
+from pyecharts.components import Table
 from pyecharts import options as opts
 
 # Function to load JSON data from a file path
@@ -25,8 +26,30 @@ class DrawEcharts():
         # self.data = load_json(file_path)
         self.data = data
 
-    # Function to generate pie charts
-    def generate_pie_charts(self, data):
+    # Function to generate table
+    def generate_table(self, data_cust):
+        table = Table()
+        rows = list()
+        headers = ['厂商', '正面副栅', '背面副栅', '正面主栅', '背面主栅']
+        
+        supplies_dict = dict()
+        for prod, supplies in data_cust.items():
+            if prod == '实际开线数':
+                xianshu_sum = int(supplies)
+                continue
+            supplies_dict.update(supplies)
+        supplies_list = supplies_dict.keys()
+
+        for ss in supplies_list:
+            rows.append({'厂商':ss, '正面副栅':data_cust['正面副栅'][ss], 
+                         '背面副栅':data_cust['背面副栅'][ss], '正面主栅':data_cust['正面主栅'][ss], 
+                         '背面主栅':data_cust['背面主栅'][ss]})
+        
+        table.add(headers, rows)
+            
+    
+    # Function to generate _pie charts with table
+    def generate_pie_charts_with_table(self, data):
         page = Page(layout=Page.SimplePageLayout)
         for customer, products in data.items():
             grid = Grid(init_opts=opts.InitOpts(width="100%", height="400px"))
@@ -59,11 +82,16 @@ class DrawEcharts():
                 position += 1
             if position > 0:
                 page.add(grid)
+            
+            # # add table
+            # grid = Grid(init_opts=opts.InitOpts(width="100%", height="400px"))
+            # cust_table = self.generate_table(products)
+            # page.add(grid)
         return page
 
     # Main function
     def draw_pie(self, output_html="pie_charts.html"):
-        page = self.generate_pie_charts(self.data)
+        page = self.generate_pie_charts_with_table(self.data)
         page.render(output_html)
         print(f"✅ 已生成：Charts have been saved to {output_html}")
 
