@@ -1,7 +1,5 @@
 import os
 import pandas as pd
-from openpyxl import Workbook
-from openpyxl.drawing.image import Image
 import numpy as np
 import colorsys
 import matplotlib.pyplot as plt
@@ -12,12 +10,12 @@ import ipdb
 random.seed(1234567)
 
 class AutoMarket():
-    def __init__(self, working_dir, dump_vis=True):
+    def __init__(self, working_dir, dump_vis=False):
         self.working_dir = working_dir
         self.res_dir = f'{self.working_dir}/res'
         os.makedirs(self.res_dir, exist_ok=True)
         self.dump_vis = dump_vis
-        self.header_prefix = ['客户', '基地', '负责人', '实际开线数', '日用量（KG/线)', '其他', '总数核对', '备注']
+        self.header_prefix = ['客户', '基地', '负责人', '实际开线数', '日用量（KG/线)', '总数核对', '备注']
         self.products = ['正面副栅', '背面副栅', '正面主栅', '背面主栅']
         self.color_map = self.generate_random_colors(20)
         self.customers = []
@@ -126,18 +124,21 @@ class AutoMarket():
         self.info = dict()
         for cust in self.customers:
             self.info[cust] = dict()
+            filtered_df = df[df.iloc[:, 0].astype(str).str.contains(cust, na=False)]
+            self.info[cust]['实际开线数'] = int(pd.to_numeric(filtered_df['实际开线数'], errors='coerce').sum())
+            # ipdb.set_trace()
             for prod in self.products:
                 self.info[cust][prod] = dict()
                 for compe in self.competitors:
                     company_product = f'{compe}_{prod}'
-                    filtered_df = df[df.iloc[:, 0].astype(str).str.contains(cust, na=False)]
                     sum_company_product = filtered_df[company_product].sum()
                     self.info[cust][prod][compe] = sum_company_product
                 if self.dump_vis:
                     self.draw_pie(self.info[cust][prod].keys(), self.info[cust][prod].values(), title=f'{cust}_{prod}')
+            
         self.dump_analyze_results() 
 
-        # 行业各prod友商share分析
+        # 行业各production友商share分析
         self.prod_share = dict()
         for prod in self.products:
             self.prod_share[prod] = dict()
@@ -257,6 +258,8 @@ class AutoMarket():
         self.analyze(df_main)
         print('\033[1;32m---- finished ----\033[0m')
 
+        return self.info
+
 
 
 
@@ -264,9 +267,9 @@ class AutoMarket():
 
 
 if __name__ == "__main__":
-    working_dir = f'./data/20241125'
+    working_dir = f'./data/20250602'
     market = AutoMarket(working_dir)
-    market.forward()
+    _ = market.forward()
             
 
 
