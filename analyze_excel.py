@@ -15,7 +15,9 @@ class AutoMarket():
         self.res_dir = f'{self.working_dir}/res'
         os.makedirs(self.res_dir, exist_ok=True)
         self.dump_vis = dump_vis
-        self.header_prefix = ['客户', '基地', '负责人', '实际开线数', '日用量（KG/线)', '总数核对', '备注']
+        self.order_cust = ['通威', '晶科', '晶澳', '天合', '阿特斯', '捷泰', '正泰', '隆基', '英发', '中润', '爱旭']
+        self.header_prefix = ['客户', '基地', '负责人', '实际开线数', '日用量（KG/线)', '总数核对', '备注', '电池尺寸',
+                                '单片湿重（mg）', '日用量（KG/线）']
         self.products = ['正面副栅', '背面副栅', '正面主栅', '背面主栅']
         self.customers = []
         self.competitors = None
@@ -84,6 +86,7 @@ class AutoMarket():
         competitors = list(set(competitors))
         if not self.competitors:
             self.competitors = competitors
+        print(self.competitors)
         assert self.competitors==competitors, 'competitor conflict'
 
         # 填充第一列
@@ -194,7 +197,18 @@ class AutoMarket():
         info_main = self.analyze(df_main, json_name=sheet)
         print('\033[1;32m---- finished ----\033[0m')
 
+        # adjust order of cust in info
+        info_main = self.adjust_order_json(info_main)
+
         return info_main, df_main
+
+    def adjust_order_json(self, info):
+        new_info = dict()
+        for c in self.order_cust:
+            if c in info:
+                new_info[c] = info.pop(c)
+        new_info.update(info)
+        return new_info
 
 
 
