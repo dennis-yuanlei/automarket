@@ -27,6 +27,7 @@ if __name__ == "__main__":
     market = AutoMarket(working_dir)
     data_main, df_main = market.forward(sheet='客户I')
     market_echart = DrawEcharts(data_main)
+ 
     pie = market_echart.draw_pie(f'{working_dir}/res/市占率份额统计.html')
 
     market2 = AutoMarket(working_dir)

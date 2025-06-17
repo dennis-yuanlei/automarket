@@ -25,6 +25,22 @@ class DrawEcharts():
     def __init__(self, data):
         # self.data = load_json(file_path)
         self.data = data
+        self.supplier_colors = {
+                                "上银": "#1f77b4",
+                                "（线数）帝科": "#c61e1e",
+                                "凯盈": "#2ca02c",
+                                "天盛": "#752F2F",
+                                "宏星": "#9467bd",
+                                "聚和": "#8c564b",
+                                "光达": "#cf57ab",
+                                "索特": "#7f7f7f",
+                                "日御": "#bcbd22",
+                                "贺利氏": "#17becf",
+                                "硕禾": "#ff7f0e",
+                                "儒兴": "#aec7e8",
+                                "晶银": "#ffbb78",
+                                "其他": "#98df8a"
+                                }
 
     # Function to generate table
     def generate_table(self, data_cust):
@@ -59,16 +75,21 @@ class DrawEcharts():
                     continue
                 # Filter out suppliers with zero share
                 supplier_data = [(k, v) for k, v in suppliers.items() if v > 0]
+                data_pair = []
+                for ss in supplier_data:
+                    tmp = opts.PieItem(name=ss[0], value=ss[1], itemstyle_opts=opts.ItemStyleOpts(color=self.supplier_colors[ss[0]]))
+                    data_pair.append(tmp)
+
                 if not supplier_data:
                     continue
                 pie = (
                     Pie()
                     .add(
                         "",
-                        supplier_data,
+                        data_pair,# data_pair=[(item["name"], item["value"]) for item in supplier_data],
                         radius=["30%", "50%"],
                         center=[f"{position * 25 + 12.5}%", "50%"],
-                        label_opts=opts.LabelOpts(is_show=True, position="outside")
+                        label_opts=opts.LabelOpts(is_show=True, position="outside"),
                     )
                     .set_global_opts(
                         title_opts=opts.TitleOpts(title=f"{customer} - {product}", pos_left=f"{position * 25 + 8}%", pos_top="top"),
@@ -78,15 +99,12 @@ class DrawEcharts():
                         label_opts=opts.LabelOpts(formatter="{b}\n{d}%")
                     )
                 )
+
                 grid.add(pie, grid_opts=opts.GridOpts(pos_left=f"{position * 25}%", pos_right=f"{75 - position * 25}%"))
                 position += 1
             if position > 0:
                 page.add(grid)
             
-            # # add table
-            # grid = Grid(init_opts=opts.InitOpts(width="100%", height="400px"))
-            # cust_table = self.generate_table(products)
-            # page.add(grid)
         return page
 
     # Main function
