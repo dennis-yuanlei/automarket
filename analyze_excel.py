@@ -175,6 +175,11 @@ class AutoMarket():
         return df_main, None
 
 
+    def debug(self, df1):
+        duplicates1 = df1.index.duplicated(keep=False)
+        duplicated_indices1 = df1.index[duplicates1]
+        print("重复的索引值在 df1 中：", duplicated_indices1)
+
     def forward(self, sheet='客户I'):
         print('\033[1;32m---- prepare data ----\033[0m')
         # data prepare
@@ -195,7 +200,7 @@ class AutoMarket():
         print(self.competitors)
         print('\033[1;32m---- analyze data ----\033[0m')
         info_main = self.analyze(df_main, json_name=sheet)
-        print('\033[1;32m---- finished ----\033[0m')
+        print('\033[1;32m---- analyze finished ----\033[0m')
 
         # adjust order of cust in info
         info_main = self.adjust_order_json(info_main)

@@ -5,6 +5,7 @@ import ipdb
 from analyze_excel import AutoMarket
 from draw_echarts import DrawEcharts
 from utils import get_dkem_share
+from compare_share import CompareAnalyzer
 
 def adjust_order_json(info):
     order_cust = ['通威', '晶科', '天合','晶澳','隆基','阿特斯','正泰','捷泰','东磁','弘元','爱旭','三一','中润','英发','协鑫',
@@ -20,7 +21,7 @@ def adjust_order_json(info):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="DKEM市场分析")
-    parser.add_argument('-w', "--working_dir", default='./data/20250609', help="输入文件夹的路径")
+    parser.add_argument('-w', "--working_dir", default='./data/20250616/', help="输入文件夹的路径")
     args = parser.parse_args()
     working_dir = args.working_dir
 
@@ -38,3 +39,8 @@ if __name__ == "__main__":
     df = get_dkem_share(data_all)
 
     df.to_excel(f'{working_dir}/res/DKEM市占率.xlsx', index=False)
+
+    # 对比往期分析
+    compare_analyzer = CompareAnalyzer()
+    compare_analyzer.compare_last_now(save_path=working_dir)
+    compare_analyzer.compare_all_date(save_path=working_dir)

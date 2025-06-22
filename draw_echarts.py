@@ -26,20 +26,20 @@ class DrawEcharts():
         # self.data = load_json(file_path)
         self.data = data
         self.supplier_colors = {
-                                "上银": "#1f77b4",
-                                "（线数）帝科": "#c61e1e",
-                                "凯盈": "#2ca02c",
-                                "天盛": "#752F2F",
-                                "宏星": "#9467bd",
-                                "聚和": "#8c564b",
-                                "光达": "#cf57ab",
-                                "索特": "#7f7f7f",
-                                "日御": "#bcbd22",
-                                "贺利氏": "#17becf",
-                                "硕禾": "#ff7f0e",
-                                "儒兴": "#aec7e8",
-                                "晶银": "#ffbb78",
-                                "其他": "#98df8a"
+                                "上银": "#F08080",
+                                "（线数）帝科": "#FFD700",
+                                "凯盈": "#FFDEAD",
+                                "天盛": "#DA70D6",
+                                "宏星": "#FF6347",
+                                "聚和": "#6495ED",
+                                "光达": "#3CB371",
+                                "索特": "#FFA500",
+                                "日御": "#00FFFF",
+                                "贺利氏": "#EE82EE",
+                                "硕禾": "#40E0D0",
+                                "儒兴": "#2E8B57",
+                                "晶银": "#DB7093",
+                                "其他": "#EEE8AA"
                                 }
 
     # Function to generate table
