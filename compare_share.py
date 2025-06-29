@@ -50,15 +50,15 @@ class CompareAnalyzer():
         colors = {
                 "晶澳": "#F08080",
                 "通威": "#FFD700",
-                "中润": "#FFDEAD",
-                "晶科": "#DA70D6",
+                "中润": "#B7C14C",
+                "晶科": "#CE67E8",
                 "爱旭": "#FF6347",
                 "正泰": "#6495ED",
                 "阿特斯": "#3CB371",
                 "捷泰": "#FFA500",
                 "英发": "#00FFFF",
-                "天合": "#EE82EE",
-                "隆基": "#40E0D0"
+                "天合": "#EEAD82",
+                "隆基": "#4068E0"
                 }
         data = dict()
         for cust in self.custs:
@@ -93,7 +93,7 @@ class CompareAnalyzer():
                         title_textstyle_opts=opts.TextStyleOpts(font_size=48)),  # 字体放大
             xaxis_opts=opts.AxisOpts(name="date", type_="category"),
             yaxis_opts=opts.AxisOpts(name="percent", type_="value"),
-            tooltip_opts=opts.TooltipOpts(trigger="axis"),
+            tooltip_opts=opts.TooltipOpts(trigger="none"),
             toolbox_opts=opts.ToolboxOpts(is_show=True),
             legend_opts=opts.LegendOpts(pos_top="15%", pos_right="0%", orient='vertical')
         )
@@ -123,7 +123,7 @@ class CompareAnalyzer():
                         title_textstyle_opts=opts.TextStyleOpts(font_size=48)),  # 字体放大
             xaxis_opts=opts.AxisOpts(name="date", type_="category"),
             yaxis_opts=opts.AxisOpts(name="percent", type_="value"),
-            tooltip_opts=opts.TooltipOpts(trigger="axis"),
+            tooltip_opts=opts.TooltipOpts(trigger="none"),
             toolbox_opts=opts.ToolboxOpts(is_show=True),
             legend_opts=opts.LegendOpts(pos_top="15%", pos_right="0%", orient='vertical')
         )

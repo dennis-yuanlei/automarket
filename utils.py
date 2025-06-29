@@ -19,9 +19,12 @@ def get_dkem_share(data):
         for prod, compe in data[cust].items():
             if prod=='实际开线数':
                 continue
+            
             dkem_xianshu = compe['（线数）帝科']
             if '索特' in compe:
                 dkem_xianshu += compe['索特']
+            if "（线数）索特" in compe:
+                dkem_xianshu += compe["（线数）索特"]
             tmp['有效产能'] = xianshu_sum/4
             tmp.update({f'{prod}占比': f'{round((dkem_xianshu/max(0.00000001, xianshu_sum))*100, 2)}%'})
             tmp_guimo[f'{prod}规模'] = f'{(dkem_xianshu/4):.2f}'

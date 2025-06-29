@@ -1,6 +1,7 @@
 import pandas as pd
 import argparse
 import ipdb
+import os
 
 from analyze_excel import AutoMarket
 from draw_echarts import DrawEcharts
@@ -20,27 +21,27 @@ def adjust_order_json(info):
     return new_info
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="DKEM市场分析")
-    parser.add_argument('-w', "--working_dir", default='./data/20250623/', help="输入文件夹的路径")
-    args = parser.parse_args()
-    working_dir = args.working_dir
+    for d in os.listdir('./data'):
+        if d=='.DS_Store':
+            continue
+        working_dir = os.path.join('./data', d)
 
-    market = AutoMarket(working_dir)
-    data_main, df_main = market.forward(sheet='客户I')
-    market_echart = DrawEcharts(data_main)
- 
-    pie = market_echart.draw_pie(f'{working_dir}/res/市占率份额统计.html')
-
-    market2 = AutoMarket(working_dir)
-    data_other, df_other = market2.forward(sheet='客户II')
+        market = AutoMarket(working_dir)
+        data_main, df_main = market.forward(sheet='客户I')
+        market_echart = DrawEcharts(data_main)
     
-    data_main.update(data_other)
-    data_all = adjust_order_json(data_main)
-    df = get_dkem_share(data_all)
+        pie = market_echart.draw_pie(f'{working_dir}/res/市占率份额统计.html')
 
-    df.to_excel(f'{working_dir}/res/DKEM市占率.xlsx', index=False)
+        market2 = AutoMarket(working_dir)
+        data_other, df_other = market2.forward(sheet='客户II')
+        
+        data_main.update(data_other)
+        data_all = adjust_order_json(data_main)
+        df = get_dkem_share(data_all)
 
-    # 对比往期分析
-    compare_analyzer = CompareAnalyzer()
-    compare_analyzer.compare_last_now(save_path=working_dir)
-    compare_analyzer.compare_all_date(save_path=working_dir)
+        df.to_excel(f'{working_dir}/res/DKEM市占率.xlsx', index=False)
+
+        # 对比往期分析
+        compare_analyzer = CompareAnalyzer()
+        compare_analyzer.compare_last_now(save_path=working_dir)
+        compare_analyzer.compare_all_date(save_path=working_dir)
