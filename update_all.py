@@ -17,6 +17,8 @@ def adjust_order_json(info):
     for c in order_cust:
         if c in info:
             new_info[c] = info.pop(c)
+    if len(info)>0:
+        print(f'❌  {info.keys()} 没有指定顺序，可能名称有误\n 正确的名称应为{order_cust}')
     new_info.update(info)
     return new_info
 

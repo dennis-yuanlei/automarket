@@ -87,7 +87,7 @@ class AutoMarket():
         if not self.competitors:
             self.competitors = competitors
         print(self.competitors)
-        assert self.competitors==competitors, 'competitor conflict'
+        assert self.competitors==competitors, f'公司应该是{self.competitors},但表格里是{competitors}'
 
         # 填充第一列
         customers = df['客户'].tolist()

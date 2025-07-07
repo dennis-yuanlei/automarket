@@ -2,6 +2,8 @@ import json
 from pyecharts.charts import Pie, Grid, Page
 from pyecharts.components import Table
 from pyecharts import options as opts
+from pyecharts.render import make_snapshot
+from snapshot_selenium import snapshot as driver
 
 # Function to load JSON data from a file path
 def load_json(file_path):

@@ -3,7 +3,7 @@ import json
 import os
 
 from pyecharts import options as opts
-from pyecharts.charts import Line
+from pyecharts.charts import Line, Grid
 
 import ipdb
 
@@ -71,6 +71,8 @@ class CompareAnalyzer():
             data[cust] = {'正面副栅占比':zhengyin, '背面副栅占比':beiyin}
         
         # draw line
+        grid = Grid(init_opts=opts.InitOpts(width="60%", height="800px"))
+
         # 创建正面副栅占比折线图对象
         line = Line()
         # 添加 X 轴数据（时间轴）
@@ -90,15 +92,16 @@ class CompareAnalyzer():
         line.set_global_opts(
             title_opts=opts.TitleOpts(title="客户I正面副栅占比趋势",
                         pos_left="center",  # 主标题居中
-                        title_textstyle_opts=opts.TextStyleOpts(font_size=48)),  # 字体放大
+                        pos_top="1%",
+                        title_textstyle_opts=opts.TextStyleOpts(font_size=36)),  # 字体放大
             xaxis_opts=opts.AxisOpts(name="date", type_="category"),
             yaxis_opts=opts.AxisOpts(name="percent", type_="value"),
             tooltip_opts=opts.TooltipOpts(trigger="none"),
             toolbox_opts=opts.ToolboxOpts(is_show=True),
-            legend_opts=opts.LegendOpts(pos_top="15%", pos_right="0%", orient='vertical')
+            legend_opts=opts.LegendOpts(pos_top="10%", pos_right="0%", orient='vertical')
         )
-        # 渲染图表到 HTML 文件
-        line.render(f"{save_path}/res/正面副栅占比趋势.html")
+        # 使用 Grid 布局容器
+        grid.add(line, grid_opts=opts.GridOpts(pos_top="10%", pos_bottom="60%"))
 
         #################################################
         # 创建背面面副栅占比折线图对象
@@ -120,15 +123,17 @@ class CompareAnalyzer():
         line.set_global_opts(
             title_opts=opts.TitleOpts(title="客户I背面副栅占比趋势",
                         pos_left="center",  # 主标题居中
-                        title_textstyle_opts=opts.TextStyleOpts(font_size=48)),  # 字体放大
+                        pos_top="50%",
+                        title_textstyle_opts=opts.TextStyleOpts(font_size=36)),  # 字体放大
             xaxis_opts=opts.AxisOpts(name="date", type_="category"),
             yaxis_opts=opts.AxisOpts(name="percent", type_="value"),
             tooltip_opts=opts.TooltipOpts(trigger="none"),
             toolbox_opts=opts.ToolboxOpts(is_show=True),
-            legend_opts=opts.LegendOpts(pos_top="15%", pos_right="0%", orient='vertical')
+            legend_opts=opts.LegendOpts(pos_top="60%", pos_right="0%", orient='vertical')
         )
-        # 渲染图表到 HTML 文件
-        line.render(f"{save_path}/res/背面副栅占比趋势.html")
+        grid.add(line, grid_opts=opts.GridOpts(pos_top="60%", pos_bottom="10%"))
+
+        grid.render(f"{save_path}/res/客户I占比趋势变化.html")
                 
     
     
