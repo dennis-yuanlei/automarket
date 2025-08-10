@@ -32,6 +32,7 @@ class CompareAnalyzer():
         for cust in df_now.index:
             if cust not in df_last.index:
                 continue
+
             zhengyin = float(df_now.loc[cust].loc['正面副栅占比'].strip('%'))-float(df_last.loc[cust].loc['正面副栅占比'].strip('%'))
             beiyin = float(df_now.loc[cust].loc['背面副栅占比'].strip('%'))-float(df_last.loc[cust].loc['背面副栅占比'].strip('%'))
             if zhengyin<thre and beiyin<thre:
