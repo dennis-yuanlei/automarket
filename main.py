@@ -12,7 +12,7 @@ def adjust_order_json(info):
                 '中环艾能','大恒','仕净','VSUN','时创','林洋','大族',
                 '中来','和光同程','润阳','一道','润马','正奇','鸿禧','中环低碳','美达伦','日月光能','旭合','高新卓曜','炘皓','环晟',
                 '东方日升','合盛','格林保尔','亿晶','华东光能','超晶','国康','泰川','中清',
-                "韩华","协航","Emmvee","Adani", "Waaree","TaTa",'Premier','博威','SEG', 'Renewsys']
+                "韩华","协航","Emmvee","Adani", "Waaree","waaree","TaTa","TATA",'Premier','博威','SEG', 'Renewsys']
     new_info = dict()
     for c in order_cust:
         if c in info:

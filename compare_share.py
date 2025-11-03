@@ -10,11 +10,18 @@ import ipdb
 class CompareAnalyzer():
     def __init__(self, data_dir='./data'):
         self.dfs = []
-        self.date_list = os.listdir(data_dir)
+        tt = os.listdir(data_dir)
+        self.date_list = []
+        # 剔除20250901之前的数据
+        for i in tt:
+            if i>'20250831':
+                self.date_list.append(i)
         if '.DS_Store' in self.date_list:
             self.date_list.remove('.DS_Store')
         self.date_list.sort()
         for date in self.date_list:
+            # if date < '20250901':
+            #     continue
             excel_path = os.path.join(data_dir, date, 'res', 'DKEM市占率.xlsx')
             df = pd.read_excel(excel_path, index_col=0)
             self.dfs.append(df)
