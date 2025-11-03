@@ -12,7 +12,7 @@ class CompareAnalyzer():
         self.dfs = []
         tt = os.listdir(data_dir)
         self.date_list = []
-        # 剔除20250901之前的数据
+        # 剔除20250901之前的数据同比
         for i in tt:
             if i>'20250831':
                 self.date_list.append(i)
